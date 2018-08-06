@@ -1,4 +1,4 @@
-# OData V4 Service modules - PostgreSQL Connector
+# OData V4 Service modules - TYPEORM Connector
 
 Service OData v4 requests from a TYPEORM.
 
@@ -12,7 +12,7 @@ into SQL query statements, that you can execute over a TYPEORM.
 
 ## Usage as server - TypeScript
 ```javascript
-import { createFilter } from 'odata-v4-pg'
+import { createFilter } from 'odata-v4-typeorm'
 
 //example request:  GET /api/Users?$filter=Id eq 42
 app.get("/api/Users", (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ Advanced TypeScript example available [here](https://raw.githubusercontent.com/j
 
 ## Usage ES5
 ```javascript
-var createFilter = require('odata-v4-mysql').createFilter;
+var createFilter = require('odata-v4-typeorm').createFilter;
 
 app.get("/api/Users", function(req, res) {
     var filter = createFilter(req.query.$filter);
