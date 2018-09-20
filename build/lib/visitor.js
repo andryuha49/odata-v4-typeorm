@@ -52,16 +52,11 @@ class TypeOrmVisitor extends visitor_1.Visitor {
         this.Visit(node.value.left, context);
         this.where += ' = ';
         this.Visit(node.value.right, context);
-        console.log('TEST0', context);
         if (this.options.useParameters && context.literal == null) {
-            console.log('TEST1', this.where);
-            console.log('TEST1', context.identifier);
-            console.log('TEST1', this.parameterSeed);
             this.where = this.where.replace(/= :p\d*$/, 'IS NULL')
                 .replace(new RegExp(`\\:p\\d* = ${this.alias}.${context.identifier}$`), `${this.alias}.${context.identifier} IS NULL`);
         }
         else if (context.literal == 'NULL') {
-            console.log('TEST2');
             this.where = this.where.replace(/= NULL$/, 'IS NULL').replace(new RegExp(`NULL = ${this.alias}.${context.identifier}$`), `${this.alias}.${context.identifier} IS NULL`);
         }
     }
@@ -69,14 +64,11 @@ class TypeOrmVisitor extends visitor_1.Visitor {
         this.Visit(node.value.left, context);
         this.where += ' <> ';
         this.Visit(node.value.right, context);
-        console.log('TEST0', context);
         if (this.options.useParameters && context.literal == null) {
-            console.log('TEST1');
             this.where = this.where.replace(/<> :p\d*$/, 'IS NOT NULL')
                 .replace(new RegExp(`\\:p\\d* <> ${this.alias}.${context.identifier}$`), `${this.alias}.${context.identifier} IS NOT NULL`);
         }
         else if (context.literal == 'NULL') {
-            console.log('TEST2');
             this.where = this.where.replace(/<> NULL$/, 'IS NOT NULL').replace(new RegExp(`NULL <> ${this.alias}.${context.identifier}$`), `${this.alias}.${context.identifier} IS NOT NULL`);
         }
     }
