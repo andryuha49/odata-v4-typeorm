@@ -27,6 +27,20 @@ const queryToOdataString = (query) => {
     }
     return result;
 };
+const processIncludes = (queryBuilder, odataQuery, alias) => {
+    if (odataQuery.includes && odataQuery.includes.length > 0) {
+        odataQuery.includes.forEach(item => {
+            queryBuilder = queryBuilder.leftJoinAndSelect(alias + '.' + item.navigationProperty, item.navigationProperty, item.where.replace(/typeorm_query/g, item.navigationProperty), mapToObject(item.parameters));
+            if (item.orderby && item.orderby != '1') {
+                const orders = item.orderby.split(',').map(i => i.trim().replace(/typeorm_query/g, item.navigationProperty));
+                orders.forEach((itemOrd) => {
+                    queryBuilder = queryBuilder.addOrderBy(...(itemOrd.split(' ')));
+                });
+            }
+        });
+    }
+    return queryBuilder;
+};
 const executeQueryByQueryBuilder = (inputQueryBuilder, query, options) => __awaiter(this, void 0, void 0, function* () {
     const alias = options.alias || 'typeorm_query';
     const filter = createFilter_1.createFilter(query.$filter, { alias: alias });
@@ -37,6 +51,7 @@ const executeQueryByQueryBuilder = (inputQueryBuilder, query, options) => __awai
             odataQuery = createQuery_1.createQuery(odataString);
         }
     }
+    //console.log('ODATA', odataQuery);
     let queryBuilder = inputQueryBuilder;
     queryBuilder = queryBuilder
         .where(odataQuery.where)
@@ -44,7 +59,8 @@ const executeQueryByQueryBuilder = (inputQueryBuilder, query, options) => __awai
     if (odataQuery.select && odataQuery.select != '*') {
         queryBuilder = queryBuilder.select(odataQuery.select.split(',').map(i => i.trim()));
     }
-    if (odataQuery.orderby) {
+    queryBuilder = processIncludes(queryBuilder, odataQuery, alias);
+    if (odataQuery.orderby && odataQuery.orderby !== '1') {
         const orders = odataQuery.orderby.split(',').map(i => i.trim());
         orders.forEach((item) => {
             queryBuilder = queryBuilder.addOrderBy(...(item.split(' ')));
@@ -73,6 +89,7 @@ function odataQuery(repository) {
             res.status(200).json(result);
         }
         catch (e) {
+            console.log('ODATA ERROR', e);
             res.status(500).json({ message: 'Internal server error.', error: { message: e.message } });
         }
         return next();
