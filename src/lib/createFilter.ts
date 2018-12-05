@@ -1,7 +1,7 @@
 import {TypeOrmVisitor as Visitor} from './visitor';
 import {Token} from 'odata-v4-parser/lib/lexer';
 import {SqlOptions} from './sqlOptions';
-import {filter} from 'odata-v4-parser';
+import {filter, query} from 'odata-v4-parser';
 import {SQLLang} from 'odata-v4-sql';
 
 /**
@@ -15,7 +15,14 @@ import {SQLLang} from 'odata-v4-sql';
 export function createFilter(odataFilter: string, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: Token, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: string | Token, options = <SqlOptions>{}): Visitor {
+  console.log('OPTIONS', options)
   options.type = SQLLang.Oracle;
-  let ast: Token = <Token>(typeof odataFilter == 'string' ? filter(<string>odataFilter) : odataFilter);
-  return new Visitor(options).Visit(ast).asType();
+  let ast: Token = <Token>(typeof odataFilter == 'string' ? filter(<string>odataFilter) : odataFilter);  const visitor = new Visitor(options);
+  console.log('VISITOR', visitor);
+  const visit = visitor.Visit(ast);
+  console.log('VISIT', visit);
+  const type = visit.asType()
+  console.log('TYPE', type)
+  return type;
+
 }
