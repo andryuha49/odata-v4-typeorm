@@ -59,8 +59,7 @@ export class TypeOrmVisitor extends Visitor {
 
   private getIdentifier(originalIdentifier: string, context: any) {
     let alias = '';
-    //if (originalIdentifier.indexOf('.') === -1 ) {
-    if (!context.identifier || !context.identifier.endsWith('.')) {
+    if (!context || !context.identifier || !context.identifier.endsWith('.')) {
       alias = this.alias + '.';
     } else {
       this[context.target] = this[context.target].replace(new RegExp(this.alias + '.' + context.identifier, 'g'), context.identifier)

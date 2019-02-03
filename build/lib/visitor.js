@@ -54,8 +54,7 @@ class TypeOrmVisitor extends visitor_1.Visitor {
     }
     getIdentifier(originalIdentifier, context) {
         let alias = '';
-        //if (originalIdentifier.indexOf('.') === -1 ) {
-        if (!context.identifier || !context.identifier.endsWith('.')) {
+        if (!context || !context.identifier || !context.identifier.endsWith('.')) {
             alias = this.alias + '.';
         }
         else {

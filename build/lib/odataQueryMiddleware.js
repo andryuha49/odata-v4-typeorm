@@ -57,7 +57,6 @@ const executeQueryByQueryBuilder = (inputQueryBuilder, query, options) => __awai
             odataQuery = createQuery_1.createQuery(odataString, { alias: alias });
         }
     }
-    //console.log('ODATA', odataQuery);
     let queryBuilder = inputQueryBuilder;
     queryBuilder = queryBuilder
         .where(odataQuery.where)
@@ -86,23 +85,26 @@ const executeQueryByQueryBuilder = (inputQueryBuilder, query, options) => __awai
     return queryBuilder.getMany();
 });
 const executeQuery = (repositoryOrQueryBuilder, query, options) => __awaiter(this, void 0, void 0, function* () {
-    const alias = options.alias; //|| 'typeorm_query';
+    options = options || {};
+    const alias = options.alias || '';
     let queryBuilder = null;
-    if (typeof repositoryOrQueryBuilder.createQueryBuilder !== 'undefined') {
-        queryBuilder = repositoryOrQueryBuilder.createQueryBuilder(alias);
+    // check that input object is query builder
+    if (typeof repositoryOrQueryBuilder.expressionMap !== 'undefined') {
+        queryBuilder = repositoryOrQueryBuilder;
     }
     else {
-        queryBuilder = repositoryOrQueryBuilder;
+        queryBuilder = repositoryOrQueryBuilder.createQueryBuilder(alias);
     }
     const result = yield executeQueryByQueryBuilder(queryBuilder, query, { alias });
     return result;
 });
+exports.executeQuery = executeQuery;
 function odataQuery(repositoryOrQueryBuilder) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
-            const alias = ''; //'typeorm_query';
+            const alias = '';
             const result = yield executeQuery(repositoryOrQueryBuilder, req.query, { alias });
-            res.status(200).json(result);
+            return res.status(200).json(result);
         }
         catch (e) {
             console.log('ODATA ERROR', e);
