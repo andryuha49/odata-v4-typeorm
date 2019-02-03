@@ -59,8 +59,7 @@ export class TypeOrmVisitor extends Visitor {
 
   private getIdentifier(originalIdentifier: string, context: any) {
     let alias = '';
-    //if (originalIdentifier.indexOf('.') === -1 ) {
-    if (!context.identifier || !context.identifier.endsWith('.')) {
+    if (!context || !context.identifier || !context.identifier.endsWith('.')) {
       alias = this.alias + '.';
     } else {
       this[context.target] = this[context.target].replace(new RegExp(this.alias + '.' + context.identifier, 'g'), context.identifier)
@@ -115,62 +114,53 @@ export class TypeOrmVisitor extends Visitor {
       case "contains":
         this.Visit(params[0], context);
         if (this.options.useParameters){
+          let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
-          this.parameters.push(`%${value}%`);
-          this.where += ` like \$${this.parameters.length}`;
+          this.parameters.set(name, `%${value}%`);
+          this.where += " like ?";
         }else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
         break;
       case "endswith":
         this.Visit(params[0], context);
         if (this.options.useParameters){
+          let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
-          this.parameters.push(`%${value}`);
-          this.where += ` like \$${this.parameters.length}`;
+          this.parameters.set(name, `%${value}`);
+          this.where += " like ?";
         }else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}'`;
         break;
       case "startswith":
         this.Visit(params[0], context);
         if (this.options.useParameters){
+          let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
-          this.parameters.push(`${value}%`);
-          this.where += ` like \$${this.parameters.length}`;
+          this.parameters.set(name, `${value}%`);
+          this.where += " like ?";
         }else this.where += ` like '${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
         break;
-      case "substring":
-        this.where += "SUBSTR(";
-        this.Visit(params[0], context);
-        this.where += ", ";
-        this.Visit(params[1], context);
-        this.where += " + 1";
-        if (params[2]){
-          this.where += ", ";
-          this.Visit(params[2], context);
-        }else{
-          this.where += ", CHAR_LENGTH(";
-          this.Visit(params[0], context);
-          this.where += ")";
+      case "indexof":
+        let fn = "";
+        switch (this.type) {
+          case SQLLang.MsSql:
+            fn = "CHARINDEX";
+            break;
+          case SQLLang.ANSI:
+          case SQLLang.MySql:
+          case SQLLang.PostgreSql:
+          default:
+            fn = "INSTR";
+            break;
         }
-        this.where += ")";
-        break;
-      case "substringof":
-        this.Visit(params[1], context);
-        if (params[0].value == "Edm.String"){
-          if (this.options.useParameters){
-            let value = Literal.convert(params[0].value, params[0].raw);
-            this.parameters.push(`%${value}%`);
-            this.where += ` like \$${this.parameters.length}`;
-          }else this.where += ` like '%${SQLLiteral.convert(params[0].value, params[0].raw).slice(1, -1)}%'`;
-        }else{
-          this.where += " like ";
-          this.Visit(params[0], context);
+        if (fn === "CHARINDEX"){
+          const tmp = params[0];
+          params[0] = params[1];
+          params[1] = tmp;
         }
-        break;
-      case "concat":
-        this.where += "(";
+        this.where += `${fn}(`;
         this.Visit(params[0], context);
-        this.where += " || ";
+        this.where += ', ';
         this.Visit(params[1], context);
-        this.where += ")";
+        this.where += ") - 1";
         break;
       case "round":
         this.where += "ROUND(";
@@ -178,7 +168,7 @@ export class TypeOrmVisitor extends Visitor {
         this.where += ")";
         break;
       case "length":
-        this.where += "CHAR_LENGTH(";
+        this.where += "LEN(";
         this.Visit(params[0], context);
         this.where += ")";
         break;
@@ -208,7 +198,7 @@ export class TypeOrmVisitor extends Visitor {
         this.where += "NOW()";
         break;
       case "trim":
-        this.where += "TRIM(BOTH ' ' FROM ";
+        this.where += "TRIM(' ' FROM ";
         this.Visit(params[0], context);
         this.where += ")";
         break;

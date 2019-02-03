@@ -15,14 +15,10 @@ import {SQLLang} from 'odata-v4-sql';
 export function createFilter(odataFilter: string, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: Token, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: string | Token, options = <SqlOptions>{}): Visitor {
-  console.log('OPTIONS', options)
   options.type = SQLLang.Oracle;
   let ast: Token = <Token>(typeof odataFilter == 'string' ? filter(<string>odataFilter) : odataFilter);  const visitor = new Visitor(options);
-  console.log('VISITOR', visitor);
   const visit = visitor.Visit(ast);
-  console.log('VISIT', visit);
-  const type = visit.asType()
-  console.log('TYPE', type)
+  const type = visit.asType();
   return type;
 
 }

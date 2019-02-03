@@ -11,6 +11,72 @@ into SQL query statements, that you can execute over a TYPEORM.
 - Create high speed, standard compliant data sharing APIs
 
 ## Usage as server - TypeScript
+//example request:  GET /api/users?$filter=id eq 42&$select=id,name
+### odataQuery
+```typescript
+import express from 'express';
+import { odataQuery } from 'odata-v4-typeorm';
+import { getRepository } from 'typeorm';
+import { User } from '../entities/user';
+
+const app = express();
+const usersRepository = getRepository(User);
+
+app.get('/api/users', odataQuery(usersRepository));
+
+const port = 3001;
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+```
+
+### executeQuery by repository
+```typescript
+import express from 'express';
+import { executeQuery } from 'odata-v4-typeorm';
+import { getRepository } from 'typeorm';
+import { User } from '../entities/user';
+
+const app = express();
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const usersRepository = getRepository(User);
+    const data = await executeQuery(usersRepository, req.query);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(500).json({message: 'Internal server error.'});
+  }
+});
+
+const port = 3001;
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+```
+
+### executeQuery by queryBuilder
+```typescript
+import express from 'express';
+import { executeQuery } from 'odata-v4-typeorm';
+import { getRepository } from 'typeorm';
+import { User } from '../entities/user';
+
+const app = express();
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const queryBuilder = getRepository(User)
+      .createQueryBuilder("user")
+      .where("user.roleName = :roleName", { roleName: 'admin' });
+    const data = await executeQuery(queryBuilder, req.query);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(500).json({message: 'Internal server error.'});
+  }
+});
+
+const port = 3001;
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+```
+
+### createFilter
 ```javascript
 import { createFilter } from 'odata-v4-typeorm'
 
