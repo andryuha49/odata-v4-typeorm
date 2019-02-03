@@ -119,3 +119,7 @@ app.get("/api/Users", function(req, res) {
 * $top
 * $orderby
 * $expand
+
+If you have any questions, please don’t hesitate to contact me.
+* skype: andryuha49.
+* https://www.linkedin.com/in/andriy-zherdiy/

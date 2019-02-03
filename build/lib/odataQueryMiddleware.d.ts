@@ -1,3 +1,3 @@
-declare const executeQuery: (repositoryOrQueryBuilder: any, query: any, options: any) => Promise<any>;
+import { executeQuery } from './executeQuery';
 declare function odataQuery(repositoryOrQueryBuilder: any): (req: any, res: any, next: any) => Promise<any>;
 export { odataQuery, executeQuery };
