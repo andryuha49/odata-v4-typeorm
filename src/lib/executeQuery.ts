@@ -62,7 +62,7 @@ const executeQueryByQueryBuilder = async (inputQueryBuilder, query, options: any
 
   let queryBuilder = inputQueryBuilder;
   queryBuilder = queryBuilder
-    .where(odataQuery.where)
+    .andWhere(odataQuery.where)
     .setParameters(mapToObject(odataQuery.parameters));
 
   if (odataQuery.select && odataQuery.select != '*') {
