@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/andryuha49/odata-v4-typeorm#readme",
   "dependencies": {
-    "odata-v4-parser": "0.1.13",
+    "odata-v4-parser": "^0.1.29",
     "odata-v4-sql": "^0.1.2"
   },
   "devDependencies": {
@@ -41,7 +41,7 @@
     "@types/pg": "^6.1.34",
     "chai": "^3.5.0",
     "config": "^1.21.0",
-    "mocha": "^3.1.2",
+    "mocha": "^6.2.2",
     "odata-v4-server": "rc",
     "pg": "^6.1.0",
     "typescript": "^2.0.6"
