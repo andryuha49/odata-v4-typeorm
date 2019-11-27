@@ -1,6 +1,6 @@
 {
   "name": "odata-v4-typeorm",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "OData to TYPEORM query compiler",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
@@ -13,7 +13,7 @@
     "test": "mocha",
     "pretdd": "npm run build",
     "tdd": "mocha -w",
-    "publish": "npm run build && npm publish"
+    "release": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
