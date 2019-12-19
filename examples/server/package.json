@@ -1,0 +1,33 @@
+{
+  "name": "odata-v4-typeorm_example_server",
+  "version": "0.0.1",
+  "description": "odata-v4-typeorm example server",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andryuha49/odata-v4-typeorm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andryuha49/odata-v4-typeorm/issues"
+  },
+  "homepage": "https://github.com/andryuha49/odata-v4-typeorm#readme",
+  "dependencies": {
+    "convict": "^5.2.0",
+    "express": "^4.17.1",
+    "odata-v4-typeorm": "file:../..",
+    "pg": "^7.14.0",
+    "typeorm": "^0.2.21"
+  },
+  "devDependencies": {
+    "@types/convict": "^4.2.1",
+    "@types/node": "^12.12.17",
+    "typescript": "^3.7.3"
+  }
+}

@@ -13,7 +13,8 @@
     "test": "mocha",
     "pretdd": "npm run build",
     "tdd": "mocha -w",
-    "release": "npm run build && npm publish"
+    "release": "npm run build && npm publish",
+    "server": "cd ./examples/server && npm run start"
   },
   "repository": {
     "type": "git",

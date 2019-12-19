@@ -35,4 +35,10 @@ node_modules
 .vscode
 config/development.json
 
-dist/example
+examples
+build/example
+.idea
+.github
+src
+config
+tsconfig.json
