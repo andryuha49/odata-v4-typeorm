@@ -41,7 +41,7 @@ const config = convict({
     database: {
       doc: 'Database name',
       format: String,
-      default: 'payments',
+      default: 'demo_ov4typeorm_posts',
       env: 'db_database'
     },
     username: {
