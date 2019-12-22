@@ -8,13 +8,14 @@ export function createConnection(entities: any[] = [], migrations: any[] = [], d
   return new Promise((resolve, reject) => {
     try {
       const conf = {
-        ...dbConfig,
         migrationsTableName: '_migrations',
         migrations: migrationsArray,
-        autoSchemaSync: false,
-        synchronize: false,
-        migrationsRun: false,
-        entities: entitiesArray
+        autoSchemaSync: true,
+        synchronize: true,
+        migrationsRun: true,
+        entities: entitiesArray,
+
+        ...dbConfig,
       };
       createTypeOrmConnection(conf).then((connection) => {
         resolve(connection);

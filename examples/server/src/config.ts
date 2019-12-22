@@ -41,7 +41,7 @@ const config = convict({
     database: {
       doc: 'Database name',
       format: String,
-      default: 'payments',
+      default: 'demo_ov4typeorm_posts',
       env: 'db_database'
     },
     username: {
@@ -69,7 +69,7 @@ const config = convict({
     synchronize: {
       doc: 'Connection synchronize type',
       format: Boolean,
-      default: false
+      default: true
     },
     logging: {
       doc: 'Enable logging',
@@ -89,7 +89,8 @@ const config = convict({
 });
 
 // Load environment dependent configuration
-const filePath = './config.json';
+const env = config.get('env');
+const filePath = `${__dirname}/config.${env}.json`;
 if (fs.existsSync(filePath)) {
   config.loadFile(filePath);
 }

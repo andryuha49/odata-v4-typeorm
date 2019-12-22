@@ -1,6 +1,7 @@
 import express from 'express';
 import { odataQuery } from 'odata-v4-typeorm';
 import { getRepository } from 'typeorm';
+
 import { Author } from './entities/author';
 import { Post } from './entities/post';
 import { PostCategory } from './entities/postCategory';
@@ -21,6 +22,7 @@ export default (async () => {
     const app = express();
 
     const postRepository = getRepository(Post);
+
     app.get('/api/posts', odataQuery(postRepository));
 
     const port = config.http.port;

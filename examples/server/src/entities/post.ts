@@ -1,7 +1,7 @@
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
-import {PostDetails} from './PostDetails';
-import {PostCategory} from './PostCategory';
-import {Author} from './Author';
+import {PostDetails} from './postDetails';
+import {PostCategory} from './postCategory';
+import {Author} from './author';
 
 @Entity('posts')
 export class Post {

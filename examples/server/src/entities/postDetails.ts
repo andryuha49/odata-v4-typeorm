@@ -1,5 +1,5 @@
 import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Post} from './Post';
+import {Post} from './post';
 
 @Entity('post_details')
 export class PostDetails {
