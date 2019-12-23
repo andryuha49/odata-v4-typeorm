@@ -1,0 +1,340 @@
+{
+	"info": {
+		"_postman_id": "fcf7b506-d0ae-4eab-9b30-8aa15af4f95a",
+		"name": "odata-v4-typeorm/examples",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "/api/posts - default",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $metadata",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts/$metadata",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts",
+						"$metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$count=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$count",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $top,$skip",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$top=2&$skip=1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$top",
+							"value": "2"
+						},
+						{
+							"key": "$skip",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $orderby",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$orderby=id desc",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$orderby",
+							"value": "id desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $select",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$select=id,title",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,title"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $expand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$select=id,title,text&$expand=category,author",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,title,text"
+						},
+						{
+							"key": "$expand",
+							"value": "category,author"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $select by $expand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$select=id,title,text,category/name&$expand=category,author($select=id;$filter=id eq 1)&$filter=author/id eq 1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,title,text,category/name"
+						},
+						{
+							"key": "$expand",
+							"value": "category,author($select=id;$filter=id eq 1)"
+						},
+						{
+							"key": "$filter",
+							"value": "author/id eq 1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$select=id,title,text&$expand=category,author&$filter=id eq 1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,title,text"
+						},
+						{
+							"key": "$expand",
+							"value": "category,author"
+						},
+						{
+							"key": "$filter",
+							"value": "id eq 1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/posts - $filter by $expand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/posts?$select=id,title,text,author&$expand=category,author&$filter=author/id eq 1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"posts"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,title,text,author"
+						},
+						{
+							"key": "$expand",
+							"value": "category,author"
+						},
+						{
+							"key": "$filter",
+							"value": "author/id eq 1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/authors - default",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/authors",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/authors - $metadata",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/authors/$metadata",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authors",
+						"$metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/api/authors - $select by $expand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/authors?$select=id,name&$expand=posts($select=title)&$filter=posts/id eq 1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"authors"
+					],
+					"query": [
+						{
+							"key": "$select",
+							"value": "id,name"
+						},
+						{
+							"key": "$expand",
+							"value": "posts($select=title)"
+						},
+						{
+							"key": "$filter",
+							"value": "posts/id eq 1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const executeQuery_1 = require("./executeQuery");
 exports.executeQuery = executeQuery_1.executeQuery;
-function odataQuery(repositoryOrQueryBuilder) {
+function odataQuery(repositoryOrQueryBuilder, settings = {}) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
             const alias = '';
@@ -18,7 +18,12 @@ function odataQuery(repositoryOrQueryBuilder) {
             return res.status(200).json(result);
         }
         catch (e) {
-            console.log('ODATA ERROR', e);
+            if (settings && typeof settings.logger !== 'undefined') {
+                settings.logger.error('ODATA ERROR', e);
+            }
+            else {
+                console.error('ODATA ERROR', e);
+            }
             res.status(500).json({ message: 'Internal server error.', error: { message: e.message } });
         }
         return next();

@@ -1,12 +1,12 @@
 import {Token} from 'odata-v4-parser/lib/lexer';
 import {Literal} from 'odata-v4-literal';
 import {SQLLiteral, SQLLang, Visitor} from 'odata-v4-sql/lib/visitor';
-import {SqlOptions} from './index';
 
 export class TypeOrmVisitor extends Visitor {
-  //parameters:any[] = [];
   includes: TypeOrmVisitor[] = [];
-  alias: string = ''// 'typeorm_query';
+  alias: string = '';
+
+  private expands: {[key: string]: string} = {};
 
   constructor(options) {
     super(options);
@@ -29,18 +29,35 @@ export class TypeOrmVisitor extends Visitor {
       let expandPath = item.value.path.raw;
       let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
       if (!visitor) {
-        visitor = new TypeOrmVisitor(this.options);
+        visitor = new TypeOrmVisitor({...this.options, alias: expandPath});
         visitor.parameterSeed = this.parameterSeed;
         this.includes.push(visitor);
       }
       visitor.Visit(item);
+
+      if (visitor.select && visitor.select !== '*') {
+        this.select += ((this.select && !this.select.trim().endsWith(',') ? ',' : '') + visitor.select);
+      } else if (this.expands[expandPath]) {
+        visitor.select = this.expands[expandPath];
+      }
       this.parameterSeed = visitor.parameterSeed;
     });
   }
 
   protected VisitSelectItem(node: Token, context: any) {
+    if (node.raw.includes('/')) {
+      const item = node.raw.replace(/\//g, '.');
+      this.select += item;
+      const itemSplit = item.split('.');
+      const itemName = itemSplit[0];
+      this.expands[itemName] = this.expands[itemName] || '';
+      this.expands[itemName] +=
+        ((this.expands[itemName] && !this.expands[itemName].trim().endsWith(',') ? ',' : '') + item);
+      return;
+    }
+
     let item = node.raw.replace(/\//g, '.');
-    this.select += this.getIdentifier(item, context.identifier);//`${this.alias}.${item}`;
+    this.select += this.getIdentifier(item, context.identifier);
   }
 
   protected VisitODataIdentifier(node: Token, context: any) {
@@ -51,10 +68,10 @@ export class TypeOrmVisitor extends Visitor {
     if (node.value.name === 'NULL') {
       this[context.target] += node.value.name;
     } else {
-      const ident = this.getIdentifier(node.value.name, context);//`${this.alias ? this.alias + '.' : ''}${node.value.name}`;
+      const ident = this.getIdentifier(node.value.name, context);
       this[context.target] += ident
     }
-    context.identifier = /*this.getIdentifier(node.value.name, context); //*/node.value.name;
+    context.identifier = node.value.name;
   }
 
   private getIdentifier(originalIdentifier: string, context: any) {
