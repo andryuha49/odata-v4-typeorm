@@ -1,4 +1,5 @@
 import {createConnection as createTypeOrmConnection} from 'typeorm';
+import {SnakeCaseNamingStrategy} from './snakeCaseNamingStrategy';
 
 export function createConnection(entities: any[] = [], migrations: any[] = [], dbConfig: any) {
   const entitiesArray = []
@@ -14,6 +15,7 @@ export function createConnection(entities: any[] = [], migrations: any[] = [], d
         synchronize: true,
         migrationsRun: true,
         entities: entitiesArray,
+        namingStrategy: new SnakeCaseNamingStrategy(),
 
         ...dbConfig,
       };

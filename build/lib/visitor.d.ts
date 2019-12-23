@@ -3,6 +3,7 @@ import { Visitor } from 'odata-v4-sql/lib/visitor';
 export declare class TypeOrmVisitor extends Visitor {
     includes: TypeOrmVisitor[];
     alias: string;
+    private expands;
     constructor(options: any);
     from(table: string): string;
     protected VisitExpand(node: Token, context: any): void;

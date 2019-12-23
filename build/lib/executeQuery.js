@@ -33,7 +33,11 @@ const queryToOdataString = (query) => {
 const processIncludes = (queryBuilder, odataQuery, alias) => {
     if (odataQuery.includes && odataQuery.includes.length > 0) {
         odataQuery.includes.forEach(item => {
-            queryBuilder = queryBuilder.leftJoinAndSelect((alias ? alias + '.' : '') + item.navigationProperty, item.navigationProperty, item.where.replace(/typeorm_query/g, item.navigationProperty), mapToObject(item.parameters));
+            debugger;
+            const join = item.select === '*' ? 'leftJoinAndSelect' : 'leftJoin';
+            queryBuilder = queryBuilder[join](
+            //queryBuilder = queryBuilder.leftJoinAndSelect(
+            (alias ? alias + '.' : '') + item.navigationProperty, item.navigationProperty, item.where.replace(/typeorm_query/g, item.navigationProperty), mapToObject(item.parameters));
             if (item.orderby && item.orderby != '1') {
                 const orders = item.orderby.split(',').map(i => i.trim().replace(/typeorm_query/g, item.navigationProperty));
                 orders.forEach((itemOrd) => {

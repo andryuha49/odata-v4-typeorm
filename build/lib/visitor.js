@@ -5,9 +5,9 @@ const visitor_1 = require("odata-v4-sql/lib/visitor");
 class TypeOrmVisitor extends visitor_1.Visitor {
     constructor(options) {
         super(options);
-        //parameters:any[] = [];
         this.includes = [];
-        this.alias = ''; // 'typeorm_query';
+        this.alias = '';
+        this.expands = {};
         this.type = visitor_1.SQLLang.Oracle;
         this.alias = options.alias || this.alias;
     }
@@ -24,20 +24,37 @@ class TypeOrmVisitor extends visitor_1.Visitor {
     }
     VisitExpand(node, context) {
         node.value.items.forEach((item) => {
+            debugger;
             let expandPath = item.value.path.raw;
             let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
             if (!visitor) {
-                visitor = new TypeOrmVisitor(this.options);
+                visitor = new TypeOrmVisitor(Object.assign({}, this.options, { alias: expandPath }));
                 visitor.parameterSeed = this.parameterSeed;
                 this.includes.push(visitor);
             }
             visitor.Visit(item);
+            if (visitor.select && visitor.select !== '*') {
+                this.select += ((this.select && !this.select.trim().endsWith(',') ? ',' : '') + visitor.select);
+            }
+            else if (this.expands[expandPath]) {
+                visitor.select = this.expands[expandPath];
+            }
             this.parameterSeed = visitor.parameterSeed;
         });
     }
     VisitSelectItem(node, context) {
+        if (node.raw.includes('/')) {
+            const item = node.raw.replace(/\//g, '.');
+            this.select += item;
+            const itemSplit = item.split('.');
+            const itemName = itemSplit[0];
+            this.expands[itemName] = this.expands[itemName] || '';
+            this.expands[itemName] +=
+                ((this.expands[itemName] && !this.expands[itemName].trim().endsWith(',') ? ',' : '') + item);
+            return;
+        }
         let item = node.raw.replace(/\//g, '.');
-        this.select += this.getIdentifier(item, context.identifier); //`${this.alias}.${item}`;
+        this.select += this.getIdentifier(item, context.identifier);
     }
     VisitODataIdentifier(node, context) {
         if (context.identifier && context.identifier.endsWith('.')) {

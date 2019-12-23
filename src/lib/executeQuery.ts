@@ -26,7 +26,8 @@ const queryToOdataString = (query): string => {
 const processIncludes = (queryBuilder: any, odataQuery: any, alias: string) => {
   if (odataQuery.includes && odataQuery.includes.length > 0) {
     odataQuery.includes.forEach(item => {
-      queryBuilder = queryBuilder.leftJoinAndSelect(
+      const join = item.select === '*' ? 'leftJoinAndSelect' : 'leftJoin';
+      queryBuilder = queryBuilder[join](
         (alias ? alias + '.' : '') + item.navigationProperty,
         item.navigationProperty,
         item.where.replace(/typeorm_query/g, item.navigationProperty),

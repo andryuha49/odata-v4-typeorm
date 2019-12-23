@@ -1,12 +1,13 @@
 import express from 'express';
-import { odataQuery } from 'odata-v4-typeorm';
-import { getRepository } from 'typeorm';
+import {odataQuery} from 'odata-v4-typeorm';
+import {getConnection, getRepository} from 'typeorm';
 
-import { Author } from './entities/author';
-import { Post } from './entities/post';
-import { PostCategory } from './entities/postCategory';
-import { PostDetails } from './entities/postDetails';
-import {createConnection} from './createConnection';
+import {Author} from './entities/author';
+import {Post} from './entities/post';
+import {PostCategory} from './entities/postCategory';
+import {PostDetails} from './entities/postDetails';
+import {DataFilling1577087002356} from './migrations/1577087002356-dataFilling';
+import {createConnection} from './db/createConnection';
 import config from './config';
 
 export default (async () => {
@@ -17,13 +18,25 @@ export default (async () => {
       Post,
       PostCategory,
       PostDetails
-    ], [], dbConfig);
+    ], [DataFilling1577087002356], dbConfig);
 
     const app = express();
 
-    const postRepository = getRepository(Post);
+    // Posts
+    const postsRepository = getRepository(Post);
+    app.get('/api/posts/([\$])metadata', (res, req) => {
+      const metadata = getConnection().getMetadata(Post).ownColumns.map(column => column.propertyName);
+      return req.status(200).json(metadata)
+    });
+    app.get('/api/posts', odataQuery(postsRepository));
 
-    app.get('/api/posts', odataQuery(postRepository));
+    // Authors
+    const authorsRepository = getRepository(Author);
+    app.get('/api/authors/([\$])metadata', (res, req) => {
+      const metadata = getConnection().getMetadata(Author).ownColumns.map(column => column.propertyName);
+      return req.status(200).json(metadata)
+    });
+    app.get('/api/authors', odataQuery(authorsRepository));
 
     const port = config.http.port;
     app.listen(port, () => console.log(`Example app listening on port ${port}!`));
