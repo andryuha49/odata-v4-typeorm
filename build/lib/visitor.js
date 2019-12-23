@@ -24,7 +24,6 @@ class TypeOrmVisitor extends visitor_1.Visitor {
     }
     VisitExpand(node, context) {
         node.value.items.forEach((item) => {
-            debugger;
             let expandPath = item.value.path.raw;
             let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
             if (!visitor) {
@@ -64,10 +63,10 @@ class TypeOrmVisitor extends visitor_1.Visitor {
             this[context.target] += node.value.name;
         }
         else {
-            const ident = this.getIdentifier(node.value.name, context); //`${this.alias ? this.alias + '.' : ''}${node.value.name}`;
+            const ident = this.getIdentifier(node.value.name, context);
             this[context.target] += ident;
         }
-        context.identifier = /*this.getIdentifier(node.value.name, context); //*/ node.value.name;
+        context.identifier = node.value.name;
     }
     getIdentifier(originalIdentifier, context) {
         let alias = '';
