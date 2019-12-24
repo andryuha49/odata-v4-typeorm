@@ -1,6 +1,6 @@
 {
   "name": "odata-v4-typeorm",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0",
   "description": "OData to TYPEORM query compiler",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
@@ -26,7 +26,8 @@
     "V4",
     "sql",
     "typeorm",
-    "node"
+    "node",
+    "express"
   ],
   "author": "andryuha49",
   "license": "MIT",

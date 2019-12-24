@@ -1,6 +1,17 @@
 import {executeQuery} from './executeQuery';
 
-function odataQuery(repositoryOrQueryBuilder: any, settings: {logger?: {error: (text: string, data: any) => void}} = {}) {
+interface OdataQuerySettings {
+  logger?: {
+    error: (text: string, data: any) => void
+  }
+}
+
+/**
+ * Odata express middleware
+ * @param repositoryOrQueryBuilder - typeorm repository or query builder
+ * @param {OdataQuerySettings} settings - settings [optional]
+ */
+function odataQuery(repositoryOrQueryBuilder: any, settings: OdataQuerySettings = {}) {
   return async (req: any, res: any, next) => {
     try {
       const alias = '';
