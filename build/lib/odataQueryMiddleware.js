@@ -10,6 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const executeQuery_1 = require("./executeQuery");
 exports.executeQuery = executeQuery_1.executeQuery;
+/**
+ * Odata express middleware
+ * @param repositoryOrQueryBuilder - typeorm repository or query builder
+ * @param {OdataQuerySettings} settings - settings [optional]
+ */
 function odataQuery(repositoryOrQueryBuilder, settings = {}) {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         try {
