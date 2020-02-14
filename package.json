@@ -1,6 +1,6 @@
 {
   "name": "odata-v4-typeorm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OData to TYPEORM query compiler",
   "main": "build/lib/index.js",
   "typings": "build/lib/index",
@@ -22,12 +22,14 @@
     "url": "git+https://github.com/andryuha49/odata-v4-typeorm.git"
   },
   "keywords": [
-    "OData",
+    "typeorm",
+    "odata",
+    "nodejs",
+    "express",
+    "nestjs",
     "V4",
     "sql",
-    "typeorm",
-    "node",
-    "express"
+    "node"
   ],
   "author": "andryuha49",
   "license": "MIT",

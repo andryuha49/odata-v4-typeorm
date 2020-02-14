@@ -11,8 +11,89 @@ into SQL query statements, that you can execute over a TYPEORM.
 - Create high speed, standard compliant data sharing APIs
 
 ## Usage as server - TypeScript
-//example request:  GET /api/users?$filter=id eq 42&$select=id,name
-### odataQuery
+example request:  GET /api/users?$filter=id eq 42&$select=id,name
+## NestJS middleware
+##### - middleware
+```typescript
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { odataQuery } from 'odata-v4-typeorm';
+import { Repository } from 'typeorm';
+
+import { UserEntity } from '../entities/user.entity';
+
+@Injectable()
+export class OdataUsersMiddleware implements NestMiddleware {
+  constructor(
+    @Inject('USERS_REPOSITORY') private readonly usersRepository: Repository<UserEntity>
+  ) {}
+
+  use(req: Request, res: Response, next: Function) {
+    odataQuery(this.usersRepository)(req, res, next);
+  }
+}
+```
+##### users repository provider
+```typescript
+import { Connection } from 'typeorm';
+import { UserEntity } from '../user.entity';
+
+export const userProviders = [
+  {
+    provide: 'USERS_REPOSITORY',
+    useFactory: (connection: Connection) => connection.getRepository(UserEntity),
+    inject: ['DATABASE_CONNECTION'],
+  }
+];
+```
+
+##### database provider
+```typescript
+import { createConnection } from 'typeorm';
+import { UserEntity } from '../entities/user.entity';
+
+export const databaseProviders = [
+  {
+    provide: 'DATABASE_CONNECTION',
+    useFactory: async () => await createConnection({
+      type: 'postgres',
+      host: 'localhost',
+      port: 3306,
+      username: 'postgres',
+      password: 'root',
+      database: 'test',
+      synchronize: true,
+      
+      entities: [UserEntity]
+    }),
+  },
+];
+```
+
+##### app module
+```typescript
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+
+import { databaseProviders } from './db/database.providers';
+import { userProviders } from './providers/user.providers';
+import { OdataUsersMiddleware } from './middlewares/odataUsers.middleware';
+
+@Module({
+  providers: [
+    ...databaseProviders,
+    ...userProviders,
+  ],
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(OdataUsersMiddleware)
+      .forRoutes('api/v1/odata/users');
+  }
+}
+```
+
+## odataQuery
 ```typescript
 import express from 'express';
 import { odataQuery } from 'odata-v4-typeorm';
@@ -28,7 +109,7 @@ const port = 3001;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 ```
 
-### executeQuery by repository
+## executeQuery by repository
 ```typescript
 import express from 'express';
 import { executeQuery } from 'odata-v4-typeorm';
@@ -51,7 +132,7 @@ const port = 3001;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 ```
 
-### executeQuery by queryBuilder
+## executeQuery by queryBuilder
 ```typescript
 import express from 'express';
 import { executeQuery } from 'odata-v4-typeorm';
@@ -76,7 +157,7 @@ const port = 3001;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 ```
 
-### createFilter
+## createFilter
 ```javascript
 import { createFilter } from 'odata-v4-typeorm'
 
