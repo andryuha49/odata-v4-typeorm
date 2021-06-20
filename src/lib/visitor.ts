@@ -60,6 +60,30 @@ export class TypeOrmVisitor extends Visitor {
     this.select += this.getIdentifier(item, context.identifier);
   }
 
+  protected VisitPropertyPathExpression(node: Token, context: any) {
+    if (context.target === 'where' && node.value.current) {
+      let expandPath = node.value.current.value.name;
+      let visitor = this.includes.filter(
+        (v) => v.navigationProperty == expandPath
+      )[0];
+      if (!visitor) {
+        visitor = new TypeOrmVisitor({ ...this.options, alias: expandPath });
+        visitor.parameterSeed = this.parameterSeed;
+        this.includes.push(visitor);
+        visitor.Visit(node.value.current);
+        visitor.where = '1 = 1';
+        visitor.select = '';
+        visitor.navigationProperty = expandPath;
+      }
+    }
+
+    if (node.value.current && node.value.next) {
+      this.Visit(node.value.current, context);
+      context.identifier += '.';
+      this.Visit(node.value.next, context);
+    } else this.Visit(node.value, context);
+  }
+
   protected VisitODataIdentifier(node: Token, context: any) {
     if (context.identifier && context.identifier.endsWith('.')) {
       this[context.target] += '.';
