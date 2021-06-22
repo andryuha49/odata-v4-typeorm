@@ -30,10 +30,9 @@ export class TypeOrmVisitor extends Visitor {
       .sort((a:Token, b: Token)=>this.queryOptionsSort.indexOf(a.type) - this.queryOptionsSort.indexOf(b.type))
       .forEach((option) => this.Visit(option, context));
   }
-
   protected VisitExpand(node: Token, context: any) {
     node.value.items.forEach((item) => {
-      let expandPath = item.value.path.raw;
+      let expandPath = item.value.path.raw + item.position;
       let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
       if (!visitor) {
         visitor = new TypeOrmVisitor({...this.options, alias: expandPath});
