@@ -23,10 +23,17 @@ const queryToOdataString = (query): string => {
   return result;
 };
 
-const processIncludes = (queryBuilder: any, odataQuery: any, alias: string) => {
+const processIncludes = (queryBuilder: any, odataQuery: any, alias: string, parent_metadata: any): [any, string] =>  {
   if (odataQuery.includes && odataQuery.includes.length > 0) {
     odataQuery.includes.forEach(item => {
+      const relation_metadata = queryBuilder.connection.getMetadata(parent_metadata.relations.find(x=>x.propertyPath === item.navigationProperty).type)
       const join = item.select === '*' ? 'leftJoinAndSelect' : 'leftJoin';
+      if (join === 'leftJoin') {
+        // add selections of data
+        // todo: remove columns that are isSelect: false
+        queryBuilder.addSelect(item.select.split(',').map(x=>x.trim()));
+      }
+
       queryBuilder = queryBuilder[join](
         (alias ? alias + '.' : '') + item.navigationProperty,
         item.navigationProperty,
@@ -42,7 +49,7 @@ const processIncludes = (queryBuilder: any, odataQuery: any, alias: string) => {
       }
 
       if (item.includes && item.includes.length > 0) {
-        processIncludes(queryBuilder, {includes: item.includes}, item.navigationProperty);
+        processIncludes(queryBuilder, {includes: item.includes}, item.alias, relation_metadata);
       }
     });
   }
@@ -60,17 +67,26 @@ const executeQueryByQueryBuilder = async (inputQueryBuilder, query, options: any
       odataQuery = createQuery(odataString, {alias: alias});
     }
   }
-
+  
   let queryBuilder = inputQueryBuilder;
+  const metadata = inputQueryBuilder.connection.getMetadata(odataQuery.alias);
+  let root_select = []
+
+  // unlike the relations which are done via leftJoin[AndSelect](), we must explicitly add root
+  // entity fields to the selection if it hasn't been narrowed down by the user.
+  if (odataQuery.select === '*') {
+    root_select = metadata.nonVirtualColumns.map(x=>`${odataQuery.alias}.${x.propertyPath}`);
+  } else {
+    root_select = odataQuery.select.split(',').map(x=>x.trim())
+  }
+
+  queryBuilder = queryBuilder.select(root_select);
+
   queryBuilder = queryBuilder
     .andWhere(odataQuery.where)
     .setParameters(mapToObject(odataQuery.parameters));
 
-  if (odataQuery.select && odataQuery.select != '*') {
-    queryBuilder = queryBuilder.select(odataQuery.select.split(',').map(i => i.trim()));
-  }
-
-  queryBuilder = processIncludes(queryBuilder, odataQuery, alias);
+  queryBuilder = processIncludes(queryBuilder, odataQuery, alias, metadata);
 
   if (odataQuery.orderby && odataQuery.orderby !== '1') {
     const orders = odataQuery.orderby.split(',').map(i => i.trim());

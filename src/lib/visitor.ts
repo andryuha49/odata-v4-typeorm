@@ -34,12 +34,6 @@ export class TypeOrmVisitor extends Visitor {
         this.includes.push(visitor);
       }
       visitor.Visit(item);
-
-      if (visitor.select && visitor.select !== '*') {
-        this.select += ((this.select && !this.select.trim().endsWith(',') ? ',' : '') + visitor.select);
-      } else if (this.expands[expandPath]) {
-        visitor.select = this.expands[expandPath];
-      }
       this.parameterSeed = visitor.parameterSeed;
     });
   }
