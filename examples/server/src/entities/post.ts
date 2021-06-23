@@ -1,7 +1,8 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {PostDetails} from './postDetails';
 import {PostCategory} from './postCategory';
 import {Author} from './author';
+import { PostComment } from './postComment';
 
 @Entity('posts')
 export class Post {
@@ -32,4 +33,6 @@ export class Post {
   @ManyToOne(type => Author, author => author.posts)
   author: Author;
 
+  @OneToMany(type => PostComment, comment => comment.post)
+  comments: PostComment;
 }

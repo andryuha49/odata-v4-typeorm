@@ -1,5 +1,6 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {Post} from './post';
+import {User} from './user';
 
 @Entity('authors')
 export class Author {
@@ -13,4 +14,6 @@ export class Author {
   @OneToMany(type => Post, post => post.author)
   posts: Post[];
 
+  @ManyToOne(type => User)
+  user: User;
 }
