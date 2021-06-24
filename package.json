@@ -10,9 +10,8 @@
   "scripts": {
     "build": "tsc",
     "pretest": "npm run build",
-    "test": "mocha",
+    "test": "jest",
     "pretdd": "npm run build",
-    "tdd": "mocha -w",
     "release": "npm run build && npm publish",
     "release:beta": "npm run build && npm publish --tag beta",
     "server": "cd ./examples/server && npm run start"
@@ -42,13 +41,15 @@
     "odata-v4-sql": "^0.1.2"
   },
   "devDependencies": {
-    "@types/config": "^0.0.30",
-    "@types/pg": "^6.1.34",
-    "chai": "^3.5.0",
+    "@types/config": "^0.0.38",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.12.4",
+    "@types/pg": "^8.6.0",
     "config": "^1.21.0",
-    "mocha": "^6.2.2",
+    "jest": "^27.0.5",
     "odata-v4-server": "rc",
     "pg": "^6.1.0",
-    "typescript": "^2.0.6"
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.4"
   }
 }
