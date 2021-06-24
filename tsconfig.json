@@ -5,7 +5,8 @@
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
-    "outDir": "build"
+    "outDir": "build",
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*"
@@ -13,6 +14,7 @@
   "exclude": [
     "build",
     "node_modules",
-    "examples"
+    "examples",
+    "src/**/*.test.ts"
   ]
 }

@@ -16,7 +16,8 @@ export function createFilter(odataFilter: string, options?: SqlOptions): Visitor
 export function createFilter(odataFilter: Token, options?: SqlOptions): Visitor;
 export function createFilter(odataFilter: string | Token, options = <SqlOptions>{}): Visitor {
   options.type = SQLLang.Oracle;
-  let ast: Token = <Token>(typeof odataFilter == 'string' ? filter(<string>odataFilter) : odataFilter);  const visitor = new Visitor(options);
+  let ast: Token = <Token>(typeof odataFilter == 'string' ? filter(<string>odataFilter) : odataFilter);
+  const visitor = new Visitor(options);
   const visit = visitor.Visit(ast);
   const type = visit.asType();
   return type;
