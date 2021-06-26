@@ -1,12 +1,12 @@
-import {Token} from 'odata-v4-parser/lib/lexer';
+import {Token, TokenType} from 'odata-v4-parser/lib/lexer';
 import {Literal} from 'odata-v4-literal';
 import {SQLLiteral, SQLLang, Visitor} from 'odata-v4-sql/lib/visitor';
 
 export class TypeOrmVisitor extends Visitor {
   includes: TypeOrmVisitor[] = [];
   alias: string = '';
-
-  private expands: {[key: string]: string} = {};
+  // all other ones are sorted at the front
+  private queryOptionsSort = [TokenType.Expand, TokenType.Filter, TokenType.Select]
 
   constructor(options) {
     super(options);
@@ -24,9 +24,14 @@ export class TypeOrmVisitor extends Visitor {
     return sql;
   }
 
+  proected VisitQueryOptions(node: Token, context: any) {
+    node.value.options
+      .sort((a:Token, b: Token)=>this.queryOptionsSort.indexOf(a.type) - this.queryOptionsSort.indexOf(b.type))
+      .forEach((option) => this.Visit(option, context));
+  }
   protected VisitExpand(node: Token, context: any) {
     node.value.items.forEach((item) => {
-      let expandPath = item.value.path.raw;
+      let expandPath = item.value.path.raw + item.position;
       let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
       if (!visitor) {
         visitor = new TypeOrmVisitor({...this.options, alias: expandPath});
@@ -37,8 +42,6 @@ export class TypeOrmVisitor extends Visitor {
 
       if (visitor.select && visitor.select !== '*') {
         this.select += ((this.select && !this.select.trim().endsWith(',') ? ',' : '') + visitor.select);
-      } else if (this.expands[expandPath]) {
-        visitor.select = this.expands[expandPath];
       }
       this.parameterSeed = visitor.parameterSeed;
     });
@@ -49,18 +52,45 @@ export class TypeOrmVisitor extends Visitor {
       this.select += ', ';
     }
     if (node.raw.includes('/')) {
-      const item = node.raw.replace(/\//g, '.');
-      this.select += item;
-      const itemSplit = item.split('.');
+      const itemSplit = node.raw.split('/');
       const itemName = itemSplit[0];
-      this.expands[itemName] = this.expands[itemName] || '';
-      this.expands[itemName] +=
-        ((this.expands[itemName] && !this.expands[itemName].trim().endsWith(',') ? ',' : '') + item);
+      const alias = this.includes.find(x=>x.navigationProperty === itemName).alias;
+      this.select += `${alias}.${itemSplit[1]}`;
       return;
     }
 
     let item = node.raw.replace(/\//g, '.');
-    this.select += this.getIdentifier(item, context.identifier);
+    
+    this.select += ((this.select && !this.select.trim().endsWith(',') ? ',' : '') + this.getIdentifier(item, context.identifier));
+  }
+
+  protected VisitPropertyPathExpression(node: Token, context: any) {
+    if (context.target === 'where' && node.value.current) {
+      // if we're in a filtering context and get to this poinrt, we're dealing with a `relation/member`
+      // We need to ensure that this relation is loaded into a Visitor
+      let expandPath = node.value.current.value.name;
+      let visitor = this.includes.filter(
+        (v) => v.navigationProperty == expandPath
+      )[0];
+      if (!visitor) {
+        visitor = new TypeOrmVisitor({ ...this.options, alias: expandPath });
+        visitor.parameterSeed = this.parameterSeed;
+        this.includes.push(visitor);
+        visitor.Visit(node.value.current);
+        // if the visitor never existed before, that means the relation hasn't been loaded with another Token. 
+        // It's only used for filtering data, and thus doesn't need to return extra data
+        visitor.where = '1 = 1';
+        visitor.select = '';
+        visitor.navigationProperty = expandPath;
+      }
+    }
+
+    // Default implementation
+    if (node.value.current && node.value.next) {
+      this.Visit(node.value.current, context);
+      context.identifier += '.';
+      this.Visit(node.value.next, context);
+    } else this.Visit(node.value, context);
   }
 
   protected VisitODataIdentifier(node: Token, context: any) {

@@ -29,7 +29,7 @@ const processIncludes = (queryBuilder: any, odataQuery: any, alias: string) => {
       const join = item.select === '*' ? 'leftJoinAndSelect' : 'leftJoin';
       queryBuilder = queryBuilder[join](
         (alias ? alias + '.' : '') + item.navigationProperty,
-        item.navigationProperty,
+        item.alias,
         item.where.replace(/typeorm_query/g, item.navigationProperty),
         mapToObject(item.parameters)
       );
@@ -42,7 +42,7 @@ const processIncludes = (queryBuilder: any, odataQuery: any, alias: string) => {
       }
 
       if (item.includes && item.includes.length > 0) {
-        processIncludes(queryBuilder, {includes: item.includes}, item.navigationProperty);
+        processIncludes(queryBuilder, {includes: item.includes}, item.alias);
       }
     });
   }
@@ -66,7 +66,7 @@ const executeQueryByQueryBuilder = async (inputQueryBuilder, query, options: any
     .andWhere(odataQuery.where)
     .setParameters(mapToObject(odataQuery.parameters));
 
-  if (odataQuery.select && odataQuery.select != '*') {
+  if (odataQuery. select && odataQuery.select != '*') {
     queryBuilder = queryBuilder.select(odataQuery.select.split(',').map(i => i.trim()));
   }
 
