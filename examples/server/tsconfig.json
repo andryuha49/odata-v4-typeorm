@@ -5,10 +5,12 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
-    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
+    "rootDir": "../../", 
     "baseUrl": ".",
     "paths": {
       "*": [
@@ -18,6 +20,10 @@
     }
   },
   "include": [
-    "src/**/*"
-  ]
+    "src/**/*",
+    "../../src/**/*"
+  ],
+  "references": [
+    { "path": "../../"  }
+]
 }

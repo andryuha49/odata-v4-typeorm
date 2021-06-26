@@ -6,8 +6,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "serve": "npm run build && node --inspect dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "nodemon ./src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:run": "nodemon ./src/server.ts",
+    "dev:watch": "tsc --build --watch"
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,8 @@
   "dependencies": {
     "convict": "^5.2.0",
     "express": "^4.17.1",
-    "odata-v4-typeorm": "file:../..",
     "pg": "^7.14.0",
+    "sqlite3": "^5.0.2",
     "typeorm": "^0.2.21"
   },
   "devDependencies": {

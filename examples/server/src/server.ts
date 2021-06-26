@@ -1,5 +1,5 @@
 import express from 'express';
-import {odataQuery} from 'odata-v4-typeorm';
+import {odataQuery} from '../../../';
 import {getConnection, getRepository} from 'typeorm';
 
 import {Author} from './entities/author';
@@ -9,16 +9,16 @@ import {PostDetails} from './entities/postDetails';
 import {DataFilling1577087002356} from './migrations/1577087002356-dataFilling';
 import {createConnection} from './db/createConnection';
 import config from './config';
+import * as ormconfig from './ormconfig.json'
 
 export default (async () => {
   try {
-    const dbConfig = config.db;
     await createConnection([
       Author,
       Post,
       PostCategory,
       PostDetails
-    ], [DataFilling1577087002356], dbConfig);
+    ], [DataFilling1577087002356], ormconfig);
 
     const app = express();
 

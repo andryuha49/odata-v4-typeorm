@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "composite": true,
     "sourceMap": true,
     "target": "es6",
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
-    "outDir": "build"
+    "outDir": "build",
+    "rootDir": "./src", 
   },
   "include": [
     "src/**/*"
@@ -13,6 +15,5 @@
   "exclude": [
     "build",
     "node_modules",
-    "examples"
   ]
 }

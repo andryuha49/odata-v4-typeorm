@@ -49,6 +49,6 @@
     "mocha": "^6.2.2",
     "odata-v4-server": "rc",
     "pg": "^6.1.0",
-    "typescript": "^2.0.6"
+    "typescript": "^3.7.3"
   }
 }
