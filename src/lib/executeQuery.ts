@@ -31,7 +31,7 @@ const processIncludes = (queryBuilder: any, odataQuery: any, alias: string, pare
       if (join === 'leftJoin') {
         // add selections of data
         // todo: remove columns that are isSelect: false
-        queryBuilder.addSelect(item.select.split(',').map(x=>x.trim()));
+        queryBuilder.addSelect(item.select.split(',').map(x => x.trim()).filter(x => x !== ''));
       }
 
       queryBuilder = queryBuilder[join](
