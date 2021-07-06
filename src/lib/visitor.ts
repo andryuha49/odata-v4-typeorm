@@ -1,12 +1,12 @@
-import {Token} from 'odata-v4-parser/lib/lexer';
-import {Literal} from 'odata-v4-literal';
-import {SQLLiteral, SQLLang, Visitor} from 'odata-v4-sql/lib/visitor';
+import { Token } from 'odata-v4-parser/lib/lexer';
+import { Literal } from 'odata-v4-literal';
+import { SQLLiteral, SQLLang, Visitor } from 'odata-v4-sql/lib/visitor';
 
 export class TypeOrmVisitor extends Visitor {
   includes: TypeOrmVisitor[] = [];
   alias: string = '';
 
-  private expands: {[key: string]: string} = {};
+  private expands: { [key: string]: string } = {};
 
   constructor(options) {
     super(options);
@@ -29,7 +29,7 @@ export class TypeOrmVisitor extends Visitor {
       let expandPath = item.value.path.raw;
       let visitor = this.includes.filter(v => v.navigationProperty == expandPath)[0];
       if (!visitor) {
-        visitor = new TypeOrmVisitor({...this.options, alias: expandPath});
+        visitor = new TypeOrmVisitor({ ...this.options, alias: expandPath });
         visitor.parameterSeed = this.parameterSeed;
         this.includes.push(visitor);
       }
@@ -127,36 +127,36 @@ export class TypeOrmVisitor extends Visitor {
     } else this.where += (context.literal = SQLLiteral.convert(node.value, node.raw));
   }
 
-  protected VisitMethodCallExpression(node:Token, context:any){
+  protected VisitMethodCallExpression(node: Token, context: any) {
     var method = node.value.method;
     var params = node.value.parameters || [];
-    switch (method){
+    switch (method) {
       case "contains":
         this.Visit(params[0], context);
-        if (this.options.useParameters){
+        if (this.options.useParameters) {
           let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
           this.parameters.set(name, `%${value}%`);
-          this.where += " like ?";
-        }else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
+          this.where += ` like :${name}`;
+        } else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
         break;
       case "endswith":
         this.Visit(params[0], context);
-        if (this.options.useParameters){
+        if (this.options.useParameters) {
           let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
           this.parameters.set(name, `%${value}`);
-          this.where += " like ?";
-        }else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}'`;
+          this.where += ` like :${name}`;
+        } else this.where += ` like '%${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}'`;
         break;
       case "startswith":
         this.Visit(params[0], context);
-        if (this.options.useParameters){
+        if (this.options.useParameters) {
           let name = `p${this.parameterSeed++}`;
           let value = Literal.convert(params[1].value, params[1].raw);
           this.parameters.set(name, `${value}%`);
-          this.where += " like ?";
-        }else this.where += ` like '${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
+          this.where += ` like :${name}`;
+        } else this.where += ` like '${SQLLiteral.convert(params[1].value, params[1].raw).slice(1, -1)}%'`;
         break;
       case "indexof":
         let fn = "";
@@ -171,7 +171,7 @@ export class TypeOrmVisitor extends Visitor {
             fn = "INSTR";
             break;
         }
-        if (fn === "CHARINDEX"){
+        if (fn === "CHARINDEX") {
           const tmp = params[0];
           params[0] = params[1];
           params[1] = tmp;
