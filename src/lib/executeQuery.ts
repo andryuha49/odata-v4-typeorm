@@ -98,15 +98,28 @@ const executeQueryByQueryBuilder = async (inputQueryBuilder, query, options: any
   if (query.$top) {
     queryBuilder = queryBuilder.take(query.$top);
   }
-  if (query.$count && query.$count !== 'false') {
-    const resultData = await queryBuilder.getManyAndCount();
-    return {
-      items: resultData[0],
-      count: resultData[1]
-    }
-  }
+    if (query.$count && query.$count !== 'false') {
+      let resultData = [];
+      if (options.getRaw && options.getRaw !== 'false') {
+        resultData = await Promise.all([
+          queryBuilder.getRawMany(),
+          queryBuilder.getCount(),
+        ]);
+      } else {
+        resultData = await queryBuilder.getManyAndCount();
+      }
 
-  return queryBuilder.getMany();
+      return {
+        items: resultData[0],
+        count: resultData[1],
+      };
+    }
+
+    if (options.getRaw && options.getRaw !== 'false') {
+      return queryBuilder.getRawMany();
+    }
+
+    return queryBuilder.getMany();
 };
 
 const executeQuery = async (repositoryOrQueryBuilder: any, query, options: any) => {
