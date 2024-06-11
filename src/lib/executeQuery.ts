@@ -119,7 +119,7 @@ const executeQueryByQueryBuilder = async (inputQueryBuilder, query, options: any
       return queryBuilder.getRawMany();
     }
 
-    return queryBuilder.getMany();
+  return queryBuilder.getMany();
 };
 
 const executeQuery = async (repositoryOrQueryBuilder: any, query, options: any) => {
